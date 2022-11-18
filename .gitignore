@@ -1,0 +1,9 @@
+*
+!.gitignore
+!*.nix
+!.shellhook
+!README.md
+!scripts/
+!*.sh
+!src/
+!*.erl
