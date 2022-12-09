@@ -1,17 +1,16 @@
 -module(main).
--export([main/1, fork/1, philosopher/3]).
+-export([main/1, fork_ready/0, fork_empty/0, philosopher/3]).
 
-fork(Ready) ->
-    if Ready ->
-        receive
-            {take, Pid} ->
-                Pid ! give,
-                fork(false)
-        end;
-    true ->
-        receive
-            replace -> fork(true)
-        end
+fork_ready() ->
+    receive
+        {take, Pid} ->
+            Pid ! give,
+            fork_empty()
+    end.
+
+fork_empty() ->
+    receive
+        replace -> fork_ready()
     end.
 
 philosopher(ForkLeft, ForkRight, Done) ->
@@ -42,11 +41,11 @@ philosopher(ForkLeft, ForkRight, Done) ->
     timer:sleep(250).
 
 main(_) ->
-    Fork0 = spawn(main, fork, [true]),
-    Fork1 = spawn(main, fork, [true]),
-    Fork2 = spawn(main, fork, [true]),
-    Fork3 = spawn(main, fork, [true]),
-    Fork4 = spawn(main, fork, [true]),
+    Fork0 = spawn(main, fork_ready, []),
+    Fork1 = spawn(main, fork_ready, []),
+    Fork2 = spawn(main, fork_ready, []),
+    Fork3 = spawn(main, fork_ready, []),
+    Fork4 = spawn(main, fork_ready, []),
     spawn(main, philosopher, [Fork0, Fork1, self()]),
     spawn(main, philosopher, [Fork1, Fork2, self()]),
     spawn(main, philosopher, [Fork2, Fork3, self()]),
