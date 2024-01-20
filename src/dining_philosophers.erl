@@ -40,6 +40,11 @@ philosopher(ForkLeft, ForkRight, Done) ->
     io:format(" [~p] thinking~n", [self()]),
     timer:sleep(250).
 
+repeat(0, _) -> nil;
+repeat(N, F) ->
+    F(),
+    repeat(N - 1, F).
+
 main(_) ->
     Fork0 = spawn(main, fork_ready, []),
     Fork1 = spawn(main, fork_ready, []),
@@ -51,19 +56,9 @@ main(_) ->
     spawn(main, philosopher, [Fork2, Fork3, self()]),
     spawn(main, philosopher, [Fork3, Fork4, self()]),
     spawn(main, philosopher, [Fork0, Fork4, self()]),
-    receive
-        _ -> nil
-    end,
-    receive
-        _ -> nil
-    end,
-    receive
-        _ -> nil
-    end,
-    receive
-        _ -> nil
-    end,
-    receive
-        _ -> nil
-    end,
+    repeat(5, fun() ->
+        receive
+            _ -> nil
+        end
+    end),
     io:format("Done!~n").
