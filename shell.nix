@@ -1,5 +1,5 @@
 with import <nixpkgs> {};
-mkShell {
+mkShell.override { stdenv = llvmPackages_16.stdenv; } {
     buildInputs = [
         erlang
         shellcheck
